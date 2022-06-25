@@ -1,5 +1,5 @@
 import subprocess
-
+from MediaInfo import MediaInfo
 from os import remove as osremove, path as ospath, mkdir, walk, listdir, rmdir, makedirs
 from sys import exit as sysexit
 from json import loads as jsnloads

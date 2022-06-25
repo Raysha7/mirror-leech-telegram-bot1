@@ -1,3 +1,5 @@
+import subprocess
+
 from os import remove as osremove, path as ospath, mkdir, walk, listdir, rmdir, makedirs
 from sys import exit as sysexit
 from json import loads as jsnloads
@@ -10,7 +12,9 @@ from math import ceil
 from re import split as re_split, I
 
 from .exceptions import NotSupportedExtractionArchive
-from bot import aria2, app, LOGGER, DOWNLOAD_DIR, get_client, TG_SPLIT_SIZE, EQUAL_SPLITS
+from bot import aria2, app, LOGGER, DOWNLOAD_DIR, get_client, TG_SPLIT_SIZE, EQUAL_SPLITS, botname
+from telegraph import Telegraph
+from bot.helper.ext_utils.telegraph_helper import TelegraphHelper
 
 VIDEO_SUFFIXES = ("M4V", "MP4", "MOV", "FLV", "WMV", "3GP", "MPG", "WEBM", "MKV", "AVI")
 
@@ -164,3 +168,23 @@ def get_media_info(path):
         artist = None
 
     return duration, artist, title
+    
+
+def mediainfo(path, name):
+    try:
+        telegraph = Telegraph()
+        result = subprocess.check_output(["mediainfo", path]).decode('utf-8')
+        body_text = f"""
+    <img src='https://telegra.ph/file/4d13885ed03f17f323e0e.png' />
+    <pre>🗒 Filename: {name}</pre>
+    <pre>{result}</pre>
+    """
+        metadata = telegraph.create_page(
+            title=f'📄 {botname}_Mediainfo',
+            content=body_text,
+        )["path"]
+    except Exception as e:
+        LOGGER.error(str(e))
+        return None
+    link = f"https://telegra.ph/{metadata}"
+    return link

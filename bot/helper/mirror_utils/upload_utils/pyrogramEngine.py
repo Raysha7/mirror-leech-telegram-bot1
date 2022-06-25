@@ -79,7 +79,7 @@ class TgUploader:
                 duration = 0
                 if file_.upper().endswith(VIDEO_SUFFIXES):
                     media_info = mediainfo(up_path, file_)
-                    buts1 = InlineKeyboardMarkup([[InlineKeyboardButton("🖼 Mediainfo", f"{media_info}")]])
+                    buts1 = InlineKeyboardMarkup([[InlineKeyboardButton("🖼 Mediainfo", url=f"{media_info}")]])
                     duration = get_media_info(up_path)[0]
                     if thumb is None:
                         thumb = take_ss(up_path)
@@ -111,7 +111,7 @@ class TgUploader:
                                                                   reply_markup=buts1)
                 elif file_.upper().endswith(AUDIO_SUFFIXES):
                     media_info = mediainfo(up_path, file_)
-                    buts1 = InlineKeyboardMarkup([[InlineKeyboardButton("🖼 Mediainfo", f"{media_info}")]])
+                    buts1 = InlineKeyboardMarkup([[InlineKeyboardButton("🖼 Mediainfo", url=f"{media_info}")]])
                     duration , artist, title = get_media_info(up_path)
                     self.__sent_msg = self.__sent_msg.reply_audio(audio=up_path,
                                                                   quote=True,

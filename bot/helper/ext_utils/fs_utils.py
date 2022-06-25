@@ -13,6 +13,7 @@ from re import split as re_split, I
 
 from .exceptions import NotSupportedExtractionArchive
 from bot import aria2, app, LOGGER, DOWNLOAD_DIR, get_client, TG_SPLIT_SIZE, EQUAL_SPLITS, botname
+from bot.helper.ext_utils.telegraph_helper import telegraph
 from bot.helper.ext_utils.telegraph_helper import TelegraphHelper
 
 VIDEO_SUFFIXES = ("M4V", "MP4", "MOV", "FLV", "WMV", "3GP", "MPG", "WEBM", "MKV", "AVI")
@@ -171,7 +172,9 @@ def get_media_info(path):
 
 def mediainfo(path, name):
     try:
-        result = subprocess.check_output(["mediainfo", path, name]).decode('utf-8')
+        # result = subprocess.check_output(["mediainfo", path, name]).decode('utf-8')
+        res = Mediainfo(filename = f'{path}{name}', cmd = '/usr/bin/mediainfo')
+        result = res.getInfo()
         body_text = f"""
     <img src='https://telegra.ph/file/4d13885ed03f17f323e0e.png' />
     <pre>🗒 Filename: {name}</pre>
@@ -179,11 +182,11 @@ def mediainfo(path, name):
     """
         metadata = telegraph.create_page(
             title=f'📄 {botname}_Mediainfo',
-            content=body_text,
-        )["path"]
+            content=body_text)
+        link = f"https://telegra.ph/{metadata}"
+        LOGGER.info(f"link")
+        return link
     except Exception as e:
         LOGGER.error(str(e))
         return None
-    link = f"https://telegra.ph/{metadata}"
-    LOGGER.info(f"link")
-    return link
+

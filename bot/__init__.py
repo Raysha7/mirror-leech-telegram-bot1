@@ -1,3 +1,4 @@
+import os
 from logging import getLogger, FileHandler, StreamHandler, INFO, basicConfig, error as log_error, info as log_info, warning as log_warning
 from socket import setdefaulttimeout
 from faulthandler import enable as faulthandler_enable
@@ -57,7 +58,7 @@ try:
     TORRENT_TIMEOUT = int(TORRENT_TIMEOUT)
 except:
     TORRENT_TIMEOUT = None
-
+os.symlink('/usr/bin/mediainfo', 'mediainfo')
 PORT = environ.get('PORT')
 Popen([f"gunicorn web.wserver:app --bind 0.0.0.0:{PORT}"], shell=True)
 srun(["last-api", "-d", "--profile=."])

@@ -170,23 +170,19 @@ def get_media_info(path):
     return duration, artist, title
     
 
-def mediainfo(path, name):
+def get_mediainfo(path, name):
     try:
-        # result = subprocess.check_output(["mediainfo", path, name]).decode('utf-8')
-        res = Mediainfo(filename = f'{path}{name}', cmd = '/usr/bin/mediainfo')
-        result = res.getInfo()
+        result = subprocess.check_output(["mediainfo", path]).decode('utf-8')
         body_text = f"""
     <img src='https://telegra.ph/file/4d13885ed03f17f323e0e.png' />
     <pre>🗒 Filename: {name}</pre>
     <pre>{result}</pre>
     """
-        metadata = telegraph.create_page(
-            title=f'📄 {botname}_Mediainfo',
+        link = telegraph.create_page(
+            title=f'📄 Mediainfo',
             content=body_text)
-        link = f"https://telegra.ph/{metadata}"
-        LOGGER.info(f"link")
-        return link
+        LOGGER.info(f"{link}")
+        return link['url']
     except Exception as e:
         LOGGER.error(str(e))
         return None
-

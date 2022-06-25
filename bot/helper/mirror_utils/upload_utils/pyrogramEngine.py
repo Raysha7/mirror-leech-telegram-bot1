@@ -7,7 +7,7 @@ from threading import RLock
 
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot import DOWNLOAD_DIR, AS_DOCUMENT, AS_DOC_USERS, AS_MEDIA_USERS, CUSTOM_FILENAME, EXTENSION_FILTER, app
-from bot.helper.ext_utils.fs_utils import take_ss, get_media_info, get_path_size, mediainfo
+from bot.helper.ext_utils.fs_utils import take_ss, get_media_info, get_path_size, get_mediainfo
 from bot.helper.ext_utils.bot_utils import get_readable_file_size
 
 LOGGER = getLogger(__name__)
@@ -78,8 +78,6 @@ class TgUploader:
             if not self.__as_doc:
                 duration = 0
                 if file_.upper().endswith(VIDEO_SUFFIXES):
-                    media_info = mediainfo(up_path, file_)
-                    buts1 = InlineKeyboardMarkup([[InlineKeyboardButton("🖼 Mediainfo", url=f"{media_info}")]])
                     duration = get_media_info(up_path)[0]
                     if thumb is None:
                         thumb = take_ss(up_path)
@@ -98,6 +96,9 @@ class TgUploader:
                         new_path = ospath.join(dirpath, file_)
                         osrename(up_path, new_path)
                         up_path = new_path
+
+                    minfo = get_mediainfo(up_path, file_)
+                    bttn = InlineKeyboardMarkup([[InlineKeyboardButton("🖼 Mediainfo", url=f"{minfo}")]])
                     self.__sent_msg = self.__sent_msg.reply_video(video=up_path,
                                                                   quote=True,
                                                                   caption=cap_mono,
@@ -110,8 +111,8 @@ class TgUploader:
                                                                   progress=self.__upload_progress,
                                                                   reply_markup=buts1)
                 elif file_.upper().endswith(AUDIO_SUFFIXES):
-                    media_info = mediainfo(up_path, file_)
-                    buts1 = InlineKeyboardMarkup([[InlineKeyboardButton("🖼 Mediainfo", url=f"{media_info}")]])
+                    minfo = get_mediainfo(up_path, file_)
+                    bttn = InlineKeyboardMarkup([[InlineKeyboardButton("🖼 Mediainfo", url=f"{minfo}")]])
                     duration , artist, title = get_media_info(up_path)
                     self.__sent_msg = self.__sent_msg.reply_audio(audio=up_path,
                                                                   quote=True,
